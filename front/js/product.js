@@ -1,14 +1,18 @@
+// ********************************************************************************************************* //
+// récupérer l'id du produit à afficher
+
 //=> redirection de la page produits à la page d'un produit via son id
-let productId = new URL(window.location.href).searchParams.get("id"); //  récupération d'id avec les paramétres de l'url
+let productId = new URL(window.location.href).searchParams.get("id"); // => récupération d'id avec les paramétres de l'url
 
 //=> on récupère les infos du back-end depuis l'API avec la méthode fetch
 fetch("http://localhost:3000/api/products/" + productId)
   .then((res) => res.json())
   .then((product) => showProduct(product));
 
-
-  //récupèration des clés en variables des fonctions
-  function showProduct(produit) {
+// ********************************************************************************************************* //
+// insérer un produit et ses détails dans la page produit 
+  
+  function showProduct(produit) { // => récupèration des clés en variables des fonctions
     const { imageUrl, altTxt, name, price, description, colors } = produit;
     itemPrice = price
     setImage(imageUrl, altTxt);
@@ -48,46 +52,121 @@ fetch("http://localhost:3000/api/products/" + productId)
     });
   }
 
+// ********************************************************************************************************* //
+  //  ajouter des produits dans le panier
 
-   
-if (productId !=null){
-    let itemPrice = 0
-    let imageUrl, altTxt
+//=> on envoie les produits sélectionnés au Localstorage au clic du bouton
+
+let button = document.querySelector("#addToCart");
+button.addEventListener("click", () =>{
+  let color = document.querySelector("#colors").value; //=> récupèration de la couleur sélectionnée par l'utilisateur
+  console.log(color);
+  let produit = JSON.parse(localStorage.getItem("produits")) || []; //=> création du panier dans localstorage encore vide (tableau)
+  console.log(produit);
+  let quantity = document.querySelector("#quantity").value; //=> récupèration de la quantité sélectionnée par l'utilisateur
+  console.log(quantity);
+  
+  if (
+    color == null || color == "" || quantity == null ||quantity == 0 //=> conditions avec fenêtre alert
+  )
+  {
+  alert(
+    "Veuillez sélectionner une couleur et une quantité SVP!"
+  );
+} else {
+  window.location.href ="cart.html" // => renvoie sur la page panier du client (cart.html)
 }
-const button = document.querySelector("#addToCart")
-button.addEventListener("click", handleClick)
+ //=>création nouveau produit avec les 3 références
+let newProduct = {
+  id: productId,
+  quantity: Number(quantity),
+  color: color,
+};
+console.log(newProduct);
+//=> méthode pour chercher si un produit existe déja dans le Localstorage
+let found = produit.find(
+  (element) => element.id == productId && element.color == color
+)
+console.log(found);
+if (found == undefined) {
+  let totalQuantity = parseInt("found.quantity") + parseInt("quantity"); //=> valeur LS + value actuelle
+  console.log(totalQuantity);
+} else {
+  produit.push(newProduct);
+}
+//=> enregistrer les éléments dans localstorage si il n'existe pas
+localStorage.setItem("produits", JSON.stringify(produit));
+});
        
-function handleClick() {
-    const color = document.querySelector("#colors").value 
-    const quantity = document.querySelector("#quantity").value
 
-    if (IsOrderInValid(color, quantity)) return
-    saveOrder(color, quantity)
-    redirectToPanier()
-}
 
-function saveOrder(color, quantity) {     
-    const newProduct = {
-    id: productId,
-    color: color,
-    quantity: Number(quantity),
-    price: itemPrice,
 
- }
- console.log(newProduct);
- localStorage.setItem(productId, JSON.stringify(productId));
-}
 
-function IsOrderInValid (color, quantity) {
-    if (color == null || color === "" || quantity == null ||quantity == 0){
-        alert ("Veuillez sélectionner une couleur et une quantité SVP!")
-        return true 
-     }
-}
 
-function redirectToPanier() {
-    window.location.href ="cart.html"
-}
+
+
+
+
+
+
+
+
+
+// function handleClick() {
+//     const color = document.querySelector("#colors").value //=> récupèration de la couleur sélectionnée par l'utilisateur
+//     const quantity = document.querySelector("#quantity").value //=> récupèration de la quantité sélectionnée par l'utilisateur
+
+//     if (IsOrderInValid(color, quantity)) return
+//     addToCart(color, quantity)
+//     redirectToPanier()
+// }
+
+//  //=>création nouveau produit avec des propriétés et leur paramétres 
+// function addToCart(color, quantity) {     
+//     /*const newProduct = {
+//     id: productId,
+//     color: color,
+//     quantity: Number(quantity),
+//     price: itemPrice,
+//  }*/
+//  const newProduct = {
+//   id: productId,
+//   color: color,
+//   quantity: Number(quantity)
+//  }
+//  /*let cart = localStorage.getItem('CART');
+//  if(cart == null) {
+//   cart = [];
+//   cart.push(newProduct);
+//  } else {
+//   //tester si l'id du produit existe déjà dans le cart
+//   //si oui tester s'ils possedent la même couleur
+//      // si oui  alors p1.quantity = p1.quantity + newProduit.quantity
+//      //sinon alors tu ajoutes newProduit dans le cart (cart.push(newProduct))
+//  // sinon alors tu ajoutes newProduit dans le cart (cart.push(newProduct))
+//  }
+//  localStorage.set('CART', cart);*/
+
+//  //=>création du panier dans le localstorage 
+//  console.log(newProduct);
+//  localStorage.setItem(productId, JSON.stringify(newProduct));
+// }
+
+
+// //=> conditions avec fenêtre alert
+// function IsOrderInValid (color, quantity) {
+//     if (color == null || color == "" || quantity == null ||quantity == 0){ 
+//         alert ("Veuillez sélectionner une couleur et une quantité SVP!")
+//         return true 
+//      }
+// }
+
+// // => renvoie sur la page panier du client (cart.html)
+// function redirectToPanier() {
+//     window.location.href ="cart.html"
+// }
+
+
 
 
 
@@ -116,3 +195,9 @@ function redirectToPanier() {
 // }
 
 // produitDisplay();
+
+
+// if (productId !=null){
+//   let itemPrice = 0
+//   let imgUrl, altText
+// }
