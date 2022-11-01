@@ -1,7 +1,6 @@
 // => récupération des données de localstorage 
-let productsPanier = JSON.parse(localStorage.getItem("produit"));
+let productsPanier = JSON.parse(localStorage.getItem(".cart"));
 console.log(productsPanier);
-
 //récupération des informations des produits depuis l'API
 async function getProductsApi() {
     await fetch("http://localhost:3000/api/products")
@@ -29,37 +28,40 @@ async function getProductsApi() {
             </div>
             </div>
             </article>`;
+            displayProducts(cart)
         }
       })
-      getProductsApi();
-      
-      function displayProducts(products) {
-       
-        let totalPrice = document.getElementById("totalPrice");
-        console.log(totalPrice);
-        let totalQuantity = document.getElementById("totalQuantity");
-        console.log(totalQuantity);
-      
+    }
+    getProductsApi();
+
+function displayProducts(cart){
+    let total = 0;
+    const totalQuantity = document.querySelector("#totalQuantity");
+    totalQuantity.textContent = parseInt(cart.quantity)
+    const totalPrice = document.querySelector("#totalPrice");
+    totalPrice.textContent = cart.price
+    cart.forEach(cart => {
+        const totalUnitPrice = cart.price * cart.quantity
+        total = total + totalUnitPrice
+        totalQuantity.textContent = total
+    });
+console.log(total); 
+}
+
+
+
+
+
+
     
-           // CALCUL DU PRIX TOTAL DES ARTICLES COMMANDES
-       let products = totalPrice.price * totalQuantity.quantity;
-       
-     
-       
-      
-  
-    }
-    displayProducts();
-    }
-   
-
- 
-  
- 
 
 
 
-  
+
+
+
+
+
 
 
 
