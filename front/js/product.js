@@ -58,45 +58,64 @@ fetch("http://localhost:3000/api/products/" + productId)
 //=> on envoie les produits sélectionnés au Localstorage au clic du bouton
 
 let button = document.querySelector("#addToCart");
-button.addEventListener("click", () =>{
+button.addEventListener("click", () => {
   let color = document.querySelector("#colors").value; //=> récupèration de la couleur sélectionnée par l'utilisateur
   console.log(color);
-  let produit = JSON.parse(localStorage.getItem("produits")) || []; //=> création du panier dans localstorage encore vide (tableau)
-  console.log(produit);
+  let productsCart = JSON.parse(localStorage.getItem("productsCart")) || []; //=> recup du panier dans localstorage encore vide (tableau)
+  console.log(productsCart);
   let quantity = document.querySelector("#quantity").value; //=> récupèration de la quantité sélectionnée par l'utilisateur
   console.log(quantity);
   
-  if (
-    color == null || color == "" || quantity == null ||quantity == 0 //=> conditions avec fenêtre alert
-  )
-  {
-  alert(
-    "Veuillez sélectionner une couleur et une quantité SVP!"
-  );
-} else {
-  window.location.href ="cart.html" // => renvoie sur la page panier du client (cart.html)
-}
- //=>création nouveau produit avec les 3 références
-let newProduct = {
-  id: productId,
-  quantity: Number(quantity),
-  color: color,
-};
-console.log(newProduct);
-//=> méthode pour chercher si un produit existe déja dans le Localstorage
-let found = produit.find(
-  (element) => element.id == productId && element.color == color
-)
-console.log(found);
-if (found == undefined) {
-  let totalQuantity = parseInt("found.quantity") + parseInt("quantity"); //=> valeur LS + value actuelle
-  console.log(totalQuantity);
-} else {
-  produit.push(newProduct);
-}
-//=> enregistrer les éléments dans localstorage si il n'existe pas
-localStorage.setItem("produits", JSON.stringify(produit));
+  if (!color || !quantity  ){//=> conditions avec fenêtre alert
+    alert("Veuillez sélectionner une couleur et une quantité SVP!"); 
+  } else {
+    //=>création nouveau produit avec les 3 références
+    let newProduct = {
+      id: productId,
+      quantity: Number(quantity),
+      color: color,
+    };
+    console.log(newProduct);
+    if(productsCart.length > 0){
+      productsCart.forEach((product, index) => {
+        if(product.id == newProduct.productId && product.color == newProduct.color) {
+          let totalQuantity = parseInt("found.quantity") + parseInt("quantity"); //=> valeur LS + value actuelle
+          product.quantity = totalQuantity;
+          console.log(totalQuantity);
+          productsCart.splice(index, 1, product);
+        } else {
+          productsCart.push(newProduct)  
+        }
+      });
+    } else {
+      productsCart.push(newProduct)  
+    }
+    
+    //=> enregistrer les éléments dans localstorage si il n'existe pas
+      localStorage.setItem("productsCart", JSON.stringify(productsCart));
+      console.log('productsCart =>', productsCart);
+      window.location.href ="cart.html" // => renvoie sur la page panier du client (cart.html)
+    /*//=> méthode pour chercher si un produit existe déja dans le Localstorage
+    let found = produit.find(
+      (element) => element.id == productId && element.color == color
+    )
+    console.log(found);
+    if (found) { //if(foundProduct == null || foundProduct == undefined) = if(!foundProduct)
+      
+      let totalQuantity = parseInt("found.quantity") + parseInt("quantity"); //=> valeur LS + value actuelle
+      console.log(totalQuantity);
+    } else {
+      produit.push(newProduct);
+    }
+  
+    });*/
+  }
 });
+/*if (productId !=null){
+  let itemPrice = 0
+  let imgUrl, altText
+}*/
+ 
        
 
 
@@ -195,9 +214,3 @@ localStorage.setItem("produits", JSON.stringify(produit));
 // }
 
 // produitDisplay();
-
-
-// if (productId !=null){
-//   let itemPrice = 0
-//   let imgUrl, altText
-// }

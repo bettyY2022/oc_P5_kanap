@@ -1,49 +1,58 @@
 // => récupération des données de localstorage 
-let productsPanier = JSON.parse(localStorage.getItem(".cart"));
+let productsPanier = JSON.parse(localStorage.getItem("productsCart"));
 console.log(productsPanier);
-//récupération des informations des produits depuis l'API
-async function getProductsApi() {
-    await fetch("http://localhost:3000/api/products")
-      .then((res) => res.json())
-      .then(promise =>  {
-        for (let cart of promise) {
-            document.querySelector(".cart").innerHTML += `<article class="cart__item" id="${cart._id}"  data-color="${cart.color}">
-            <div class="cart__item__img">
-            <img src="${cart.imageUrl}" alt="${cart.altTxt}">
-            </div>
-            <div class="cart__item__content">
-            <div class="cart__item__content__description">
-            <h2>${cart.name}</h2>
-            <p>${cart.colors}</p>
-            <p>${cart.price},00 €</p>
-            </div>
-            <div class="cart__item__content__settings">
-            <div class="cart__item__content__settings__quantity">
-            <p>Qté :</p>
-            <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${cart.quantity}">
-            </div>
-            <div class="cart__item__content__settings__delete">
-            <p class="deleteItem">Supprimer</p>
-            </div>
-            </div>
-            </div>
-            </article>`;
-            displayProducts(cart)
-        }
-      })
-    }
-    getProductsApi();
+document.querySelector("#totalQuantity").textContent = '0'
+document.querySelector("#totalPrice").textContent = '0'
+ productsPanier.forEach(async (product) => {
+    await fetch("http://localhost:3000/api/products/" + product.id)
+    .then((res) => res.json())
+    .then(cart =>  {
+        let totalQuantity = parseInt(document.querySelector("#totalQuantity").textContent);
+        totalQuantity = totalQuantity + product.quantity;
+        let totalPrice = parseInt(document.querySelector("#totalPrice").textContent);
+        totalPrice = totalPrice + cart.price*product.quantity;
+        document.querySelector("#cart__items").innerHTML += `<article class="cart__item" id="${cart._id}"  data-color="${cart.color}">
+        <div class="cart__item__img">
+        <img src="${cart.imageUrl}" alt="${cart.altTxt}">
+        </div>
+        <div class="cart__item__content">
+        <div class="cart__item__content__description">
+        <h2>${cart.name}</h2>
+        <p>${product.color}</p>
+        <p>${cart.price},00 €</p>
+        </div>
+        <div class="cart__item__content__settings">
+        <div class="cart__item__content__settings__quantity">
+        <p>Qté :</p>
+        <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.quantity}">
+        </div>
+        <div class="cart__item__content__settings__delete">
+        <p class="deleteItem">Supprimer</p>
+        </div>
+        </div>
+        </div>
+        </article>`;
+        document.querySelector("#totalQuantity").textContent = totalQuantity;
+        document.querySelector("#totalPrice").textContent = totalPrice;
+    })
+})
 
-function displayProducts(cart){
+//displayProducts(productsPanier)
+//récupération des informations des produits depuis l'API
+// async function getProductsApi(productId) {
+   
+// }
+
+function displayProducts(productsPanier){
     let total = 0;
     const totalQuantity = document.querySelector("#totalQuantity");
-    totalQuantity.textContent = parseInt(cart.quantity)
+    //totalQuantity.textContent = parseInt(cart.quantity)
     const totalPrice = document.querySelector("#totalPrice");
-    totalPrice.textContent = cart.price
-    cart.forEach(cart => {
+    //totalPrice.textContent = cart.price
+    totalQuantity.textContent = productsPanier.forEach(cart => {
         const totalUnitPrice = cart.price * cart.quantity
         total = total + totalUnitPrice
-        totalQuantity.textContent = total
+        return total;
     });
 console.log(total); 
 }
