@@ -11,7 +11,7 @@ document.querySelector("#totalPrice").textContent = '0'
         totalQuantity = totalQuantity + product.quantity;
         let totalPrice = parseInt(document.querySelector("#totalPrice").textContent);
         totalPrice = totalPrice + cart.price*product.quantity;
-        document.querySelector("#cart__items").innerHTML += `<article class="cart__item" id="${cart._id}"  data-color="${cart.color}">
+        document.querySelector("#cart__items").innerHTML += `<article class="cart__item" data-id="${cart._id}"  data-color="${cart.color}">
         <div class="cart__item__img">
         <img src="${cart.imageUrl}" alt="${cart.altTxt}">
         </div>
@@ -35,6 +35,8 @@ document.querySelector("#totalPrice").textContent = '0'
         document.querySelector("#totalQuantity").textContent = totalQuantity;
         document.querySelector("#totalPrice").textContent = totalPrice;
     })
+    updateQuantity()
+    deleteProduct()
 })
 
 //displayProducts(productsPanier)
@@ -43,24 +45,116 @@ document.querySelector("#totalPrice").textContent = '0'
    
 // }
 
-function displayProducts(productsPanier){
-    let total = 0;
-    const totalQuantity = document.querySelector("#totalQuantity");
-    //totalQuantity.textContent = parseInt(cart.quantity)
-    const totalPrice = document.querySelector("#totalPrice");
-    //totalPrice.textContent = cart.price
-    totalQuantity.textContent = productsPanier.forEach(cart => {
-        const totalUnitPrice = cart.price * cart.quantity
-        total = total + totalUnitPrice
-        return total;
+// function displayProducts(productsPanier){
+//     let total = 0;
+//     const totalQuantity = document.querySelector("#totalQuantity");
+//     //totalQuantity.textContent = parseInt(cart.quantity)
+//     const totalPrice = document.querySelector("#totalPrice");
+//     //totalPrice.textContent = cart.price
+//     totalQuantity.textContent = productsPanier.forEach(cart => {
+//         const totalUnitPrice = cart.price * cart.quantity
+//         total = total + totalUnitPrice
+//         return total;
+//     });
+// console.log(total); 
+// }
+
+
+
+function updateQuantity() {
+    const itemsQuantity = document.querySelectorAll(".itemQuantity");
+    console.log("itemsQuantity", itemsQuantity);
+    itemsQuantity.forEach((qty) => {
+      qty.addEventListener("change", () => {
+        const newQuantity = Number(qty.value);
+        qty.textContent = newQuantity;
+        let kanap = qty.closest("article"); // => méthode qui parcourt les produits afin de trouver celui qui subit un changement(de qté)
+        let productsPanier = JSON.parse(localStorage.getItem("productsCart")); // => on récup le panier
+        let getId = kanap.getAttribute("data-id"); // => création de variables (pr récup id & color)
+        let getColor = kanap.getAttribute("data-color"); // ""
+        for (let i = 0; i < productsPanier.length; i++)  {
+           const product = productsPanier[i];
+            if (productsPanier[i].id === getId &&productsPanier[i].color ===  getColor) {
+            // => on vérifie le pdt par son ID et sa couleur pr enregistrer sa nvelle Qté
+            product.quantity = newQuantity;
+            localStorage.setItem("productsCart", JSON.stringify(productsCart)); // => on enregistre
+          }
+        }
+        window.location.reload(); // => réactualise la page
+      });
     });
-console.log(total); 
+  }
+
+function deleteProduct (products){
+    let btnDelete = document.querySelectorAll(".deleteItem");
+
+
+btnDelete.forEach((btnDelete)=> {
+    btnDelete.addEventListener("click", (event)=> {
+        event.preventDefault();
+
+        let article = btnDelete.closest(".cart__item");
+        console.log(article);
+
+        let productsPanier = JSON.parse(localStorage.getItem("productsCart")); 
+        console.log(productsPanier);
+
+        const productsPanierFound = productsPanier.find(
+            (element) => element.id === article.dataset.id
+        );
+        console.log(productsPanierFound);
+
+        if (productsPanierFound){
+            const productsFoundIndex = productsPanier.findIndex((products) => {
+                return (
+                    products.id === article.dataset.id &&
+                    article.dataset.color === products.color
+                );
+            });
+            productsPanier.splice(productsFoundIndex, 1);
+
+            
+            localStorage.setItem("productsCart", JSON.stringify(cart));//réinitialisation du localStorage
+            location.reload();
+
+        }
+
+       
+    })
+})
 }
 
 
 
 
 
+
+
+
+
+// function updateQuantity(){
+//     const itemsQuantity = document.querySelectorAll(".itemQuantity")
+//     console.log("itemsQuantity", itemsQuantity);
+//     itemsQuantity.forEach((qty) => {
+//         qty.addEventListener("input", () => {
+//         const newQuantity = number(qty.value);
+//         qty.textContent = newQuantity;
+//         let kanap = qty.closest("article");
+//         let productsPanier = JSON.parse(localStorage.getItem("productsCart"));
+//         let getId = kanap.getAttribute("data-id");
+//         let getColor = kanap.getAttribute("data-color");
+//         for (let index =0; index <productsPanier.length; index++ ) {
+//             const product = productsPanier[index];
+//             if (getId === product.id && getColor === product.color){
+//                 product.quantity = newQuantity;
+//                 localStorage.setItem("productsCart", JSON.stringify(productsCart));
+
+//             }
+//         }
+//         window.location.reload();
+//     });
+// });
+// }
 
     
 
