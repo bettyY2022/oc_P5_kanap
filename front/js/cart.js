@@ -48,13 +48,18 @@ function updateQuantity() { // fonction qui va prendre en compte le changement d
       const newQuantity = Number(itemQuantity.value);
       itemQuantity.textContent = newQuantity;
       let kanap = itemQuantity.closest("article");
+      let productsPanier = JSON.parse(localStorage.getItem("productsCart"));
       let getId = kanap.getAttribute("data-id");
       let getColor = kanap.getAttribute("data-color");
       for (let i = 0; i < productsPanier.length; i++) {
+
         if (getId === productsPanier.productId && getColor === productsPanier.color) {
+
           productsPanier.number(quantity) = newQuantity;
+          localStorage.setItem("productsCart", JSON.stringify(productsCart)); // => on enregistre
         }
       }
+      window.location.reload(); // => réactualise la page   
     });
   });
 }
@@ -75,7 +80,7 @@ document.addEventListener('change', (event) => {
   productsPanier[productsFoundIndex].quantity = event.target.value;
   console.log(productsPanier);
   localStorage.setItem("productsCart", JSON.stringify(productsPanier));//réinitialisation du localStorage
-  window.location.reload();// => réactualise la page 
+  window.location.reload();
 })
 
 
@@ -102,7 +107,7 @@ document.addEventListener('click', (event) => {
 })
 
 // Gestion du formulaire et de l'envoie vers la page confirmation
-// récup l'id d'input
+// Formulaire querySelector
 let first_name = document.querySelector("#firstName");
 let last_name = document.querySelector("#lastName");
 let address = document.querySelector("#address");
@@ -110,12 +115,21 @@ let city = document.querySelector("#city");
 let e_mail = document.querySelector("#email");
 let btn_order = document.querySelector("#order");
 
-// récup l'id des P pour afficher les messages 
+// Formulaire Error querySelector
 let first_name_error = document.querySelector("#firstNameErrorMsg");
+first_name_error.style.color = "red";
+
 let last_name_error = document.querySelector("#lastNameErrorMsg");
+last_name_error.style.color = "red";
+
 let address_error = document.querySelector("#addressErrorMsg");
+address_error.style.color = "red";
+
 let city_error = document.querySelector("#cityErrorMsg");
+city_error.style.color = "red";
+
 let e_mail_error = document.querySelector("#emailErrorMsg");
+e_mail_error.style.color = "red";
 
 // Champs demandés pour le POST
 let contact = {
@@ -130,7 +144,7 @@ let contact = {
 btn_order.addEventListener("click", (e) => {
   e.preventDefault();
 
-  // Création d'une classe pour fabriquer l'objet dans lequel iront les values du formulaire
+  // Création d'une classe pour fabriquer l'objet qui va contenir les valeurs du formulaire
   class Form {
     constructor() {
       this.firstName = first_name.value;
@@ -140,12 +154,12 @@ btn_order.addEventListener("click", (e) => {
       this.email = e_mail.value;
     }
   }
-  // Appel de l'instance de classe Formulaire pour créer l'objet FORM_VALUE
+  // REGEX
   const FORM_VALUE = new Form();
 
   // Const regEx pour le formulaire
   const REG_EX_LAST_FIRST_NAME = (value) => {
-    return /^[A-Za-z]{2,38}$/.test(value);// methode test : Teste une correspondance dans une chaîne. Renvoie vrai ou faux
+    return /^[A-Za-z]{2,38}$/.test(value);
   };
   const REG_EX_CITY = (value) => {
     return /^[A-Za-zéèàïêç\-\s]{1,50}\s+[0-9]{5}$/.test(value);
@@ -157,8 +171,8 @@ btn_order.addEventListener("click", (e) => {
     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value);
   };
 
-  // Fonctions qui vérifient la validité des champs de saisies des inputs
-  // Control de la validité firstName
+  // Fonctions qui vérifie la validité des champs de saisies des inputs
+   // Control de la validité firstName
   function firstNameControl() {
     let name_form = FORM_VALUE.firstName;
     if (REG_EX_LAST_FIRST_NAME(name_form)) {
@@ -238,12 +252,12 @@ btn_order.addEventListener("click", (e) => {
     return null;
   //-------------------------------------------------
 
-  // Push uniquement les Id dans le tableau des produits
+  // Push les Id dans le tableau des produits
   let products = [];
   for (let article_select of productsPanier) {
     products.push(article_select.id);
   }
-
+// une fois que les données saisies par un utilisateur sont validées, on les envoie à notre service web grâce au protocole HTTP
   // Envoie de l'objet order vers le serveur
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
@@ -254,14 +268,17 @@ btn_order.addEventListener("click", (e) => {
       contact: FORM_VALUE,
       products: products,
     }),
-  }).then(async (response) => { // Récupération et stockage de la réponse de l'API (orderId)
+    // Récupération et stockage de la réponse de l'API (orderId)
+  }).then(async (response) => {
     try {
       const POST_ORDER = await response.json();
       let orderId = POST_ORDER.orderId;
 
-      // Clear le localStorage
-      localStorage.clear();
-      window.location.assign("confirmation.html?id=" + orderId);
+      // Clear le localStorage (remove à la place de clear)
+      
+      localStorage.removeItem("productsCart");
+      // Si l'orderId a bien été récupéré, on redirige l'utilisateur vers la page de Confirmation
+      // window.location.assign("confirmation.html?id=" + orderId);
     } catch (e) {
       console.log(e);
     }

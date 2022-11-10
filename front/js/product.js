@@ -1,10 +1,8 @@
 // ********************************************************************************************************* //
 // récupérer l'id du produit à afficher
-
-//=> redirection de la page produits à la page d'un produit via son id
 let productId = new URL(window.location.href).searchParams.get("id"); // => récupération d'id avec les paramétres de l'url
 
-//=> on récupère les infos du back-end depuis l'API avec la méthode fetch
+//=> on récupère les infos du back-end depuis l'API avec la méthode fetch (details de produits)
 fetch("http://localhost:3000/api/products/" + productId)
   .then((res) => res.json())
   .then((product) => showProduct(product));
@@ -26,7 +24,10 @@ function setImage(imageUrl, altTxt) {
   let image = document.querySelector(".item__img");
   image.innerHTML = `<img src=${imageUrl}  alt=${altTxt} />`;
 }
-
+/**
+ * ajouter le titre du produit
+ * @param {string} name - le nom du produit
+ */
 function setTitle(name) {
   let nameProduct = document.querySelector("#title");
   nameProduct.innerHTML = `<h1 id="title">${name}</h1>`;
