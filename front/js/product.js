@@ -2,7 +2,7 @@
 // récupérer l'id du produit à afficher
 let productId = new URL(window.location.href).searchParams.get("id"); // => récupération d'id avec les paramétres de l'url
 
-//=> on récupère les infos du back-end depuis l'API avec la méthode fetch (details de produits)
+//=> récupérer la donnée du produit grâce à son id (details du produit)
 fetch("http://localhost:3000/api/products/" + productId)
   .then((res) => res.json())
   .then((product) => showProduct(product));
@@ -32,17 +32,26 @@ function setTitle(name) {
   let nameProduct = document.querySelector("#title");
   nameProduct.innerHTML = `<h1 id="title">${name}</h1>`;
 }
-
+/**
+ * ajouter le titre du produit
+ * @param {number} price - prix du produit
+ */
 function setPrice(price) {
   let priceArticle = document.querySelector("#price");
   priceArticle.innerHTML = `<span id="price">${price}</span>`;
 }
-
+/**
+ * ajouter le titre du produit
+ * @param {string} description - description du produit
+ */
 function setDescription(description) {
   let descriptionArticle = document.querySelector("#description");
   descriptionArticle.innerHTML = `<p id="description">${description}</p>`;
 }
-
+/**
+ * ajouter le titre du produit
+ * @param {string} color - color du produit
+ */
 function setColors(colors) {
   let select = document.querySelector("#colors");
   colors.forEach((color) => {
@@ -70,7 +79,7 @@ button.addEventListener("click", () => {
   if (!color || !quantity) {//=> conditions avec fenêtre alert
     alert("Veuillez sélectionner une couleur et une quantité SVP!");
   } else {
-    //=>création nouveau produit avec les 3 références
+    //=>création nouveau produit avec les 3 références (initialisation de l'objet)
     let newProduct = {
       id: productId,
       quantity: Number(quantity),
@@ -82,16 +91,15 @@ button.addEventListener("click", () => {
       //=> méthode pr rechercher un produit si déja existant ds localstorage
       const index = productsCart.findIndex(p => p.id === newProduct.id && p.color === newProduct.color);
       if (index > -1) {
-        productsCart[index].quantity = productsCart[index].quantity + newProduct.quantity;
+        productsCart[index].quantity = Number(productsCart[index].quantity) + Number(newProduct.quantity);
         console.log('productsCart updated:', productsCart);
       } else {
-        productsCart.push(newProduct);
+        productsCart.push(newProduct);    //=> enregistrer les éléments dans localstorage si il n'existe pas
       }
     } else {
       productsCart.push(newProduct)
     }
-
-    //=> enregistrer les éléments dans localstorage si il n'existe pas
+    // => enregistrer le nouveau element et l'additionne ds le localstorage
     localStorage.setItem("productsCart", JSON.stringify(productsCart));
     console.log('productsCart =>', productsCart);
     window.location.href = "cart.html" // => renvoie sur la page panier du client (cart.html)

@@ -1,23 +1,25 @@
 // => récupération des données de localstorage 
 let productsPanier = JSON.parse(localStorage.getItem("productsCart"));
-console.log(productsPanier);// => affiche les produits du panier
-
+console.log(productsPanier);// => afficher les produits du panier
+// récupérer l'élement HTML qui correspond à la quantité 
 document.querySelector("#totalQuantity").textContent = '0'
+// récupérer l'élement HTML qui correspond à la prix
 document.querySelector("#totalPrice").textContent = '0'
+// parcourir la liste des produits, récupérer les détails via l'api, mettre à jour le DOM pour l'ajout d'article
 productsPanier.forEach(async (product) => {
   await fetch("http://localhost:3000/api/products/" + product.id)// récupération des informations des produits depuis l'API
     .then((res) => res.json())
     .then(cart => {
       let totalQuantity = parseInt(document.querySelector("#totalQuantity").textContent);
-      totalQuantity = totalQuantity + product.quantity;
+      totalQuantity = totalQuantity + product.quantity; //calcul de la quantité totale des articles commandés
       let totalPrice = parseInt(document.querySelector("#totalPrice").textContent);
-      totalPrice = totalPrice + cart.price * product.quantity;
+      totalPrice = totalPrice + cart.price * product.quantity;//calcul du prix totale des articles commandés
       document.querySelector("#cart__items").innerHTML += `<article class="cart__item" data-id="${cart._id}"  data-color="${product.color}">
         <div class="cart__item__img">
         <img src="${cart.imageUrl}" alt="${cart.altTxt}">
         </div>
         <div class="cart__item__content">
-        <div class="cart__item__content__description">
+        <div class="cart__item__content__description"> 
         <h2>${cart.name}</h2>
         <p>${product.color}</p>
         <p>${cart.price},00 €</p>
@@ -39,30 +41,6 @@ productsPanier.forEach(async (product) => {
     productsPanier ? productsPanier.length : 0;
 })
 
-// modification du quantité des articles 
-function updateQuantity() { // fonction qui va prendre en compte le changement de la quantité
-  const itemsQuantity = document.querySelectorAll(".cart__item");
-  console.log("itemsQuantity", itemsQuantity);
-  itemsQuantity.forEach((itemQuantity) => {
-    itemQuantity.addEventListener("change", () => {
-      const newQuantity = Number(itemQuantity.value);
-      itemQuantity.textContent = newQuantity;
-      let kanap = itemQuantity.closest("article");
-      let productsPanier = JSON.parse(localStorage.getItem("productsCart"));
-      let getId = kanap.getAttribute("data-id");
-      let getColor = kanap.getAttribute("data-color");
-      for (let i = 0; i < productsPanier.length; i++) {
-
-        if (getId === productsPanier.productId && getColor === productsPanier.color) {
-
-          productsPanier.number(quantity) = newQuantity;
-          localStorage.setItem("productsCart", JSON.stringify(productsCart)); // => on enregistre
-        }
-      }
-      window.location.reload(); // => réactualise la page   
-    });
-  });
-}
 document.addEventListener('change', (event) => {
   if (!(event.target.classList.contains('itemQuantity'))) {
     return;
@@ -72,19 +50,20 @@ document.addEventListener('change', (event) => {
   console.log(id)
   console.log(colorSelected);
 
-  let productsPanier = JSON.parse(localStorage.getItem("productsCart"));
+  let productsPanier = JSON.parse(localStorage.getItem("productsCart"));// => on enregistrer dans LS
   console.log(productsPanier);
 
   const productsFoundIndex = productsPanier.findIndex((product) => product.id === id && product.color === colorSelected);
   console.log('productsFoundIndex:', productsFoundIndex);
-  productsPanier[productsFoundIndex].quantity = event.target.value;
+  productsPanier[productsFoundIndex].quantity = Number(event.target.value);
   console.log(productsPanier);
+  
   localStorage.setItem("productsCart", JSON.stringify(productsPanier));//réinitialisation du localStorage
   window.location.reload();
 })
 
 
-//suppression
+//suppression d'un produit
 document.addEventListener('click', (event) => {
   console.log('event :', event);
   if (!(event.target.classList.contains('deleteItem'))) {
@@ -100,7 +79,8 @@ document.addEventListener('click', (event) => {
 
   const productsFoundIndex = productsPanier.findIndex((product) => product.id === id && product.color === colorSelected);
   console.log('productsFoundIndex:', productsFoundIndex);
-  productsPanier.splice(productsFoundIndex, 1);
+  productsPanier.splice(productsFoundIndex, 1);// =>méthode(splice) pour supprimer (ou remplacer) un élément (objet) ds le LS
+  // |=> le 1 indique que l'on supprime 1 élément (un élément à chaque clic)
   console.log(productsPanier);
   localStorage.setItem("productsCart", JSON.stringify(productsPanier));//réinitialisation du localStorage
   window.location.reload();
@@ -278,7 +258,7 @@ btn_order.addEventListener("click", (e) => {
       
       localStorage.removeItem("productsCart");
       // Si l'orderId a bien été récupéré, on redirige l'utilisateur vers la page de Confirmation
-      // window.location.assign("confirmation.html?id=" + orderId);
+      window.location.assign("confirmation.html?id=" + orderId);
     } catch (e) {
       console.log(e);
     }
