@@ -1,9 +1,10 @@
 // => récupération des données de localstorage 
 let productsPanier = JSON.parse(localStorage.getItem("productsCart"));
 console.log(productsPanier);// => afficher les produits du panier
+function displayProducts (){
 // récupérer l'élement HTML qui correspond à la quantité 
 document.querySelector("#totalQuantity").textContent = '0'
-// récupérer l'élement HTML qui correspond à la prix
+// récupérer l'élement HTML qui correspond au prix
 document.querySelector("#totalPrice").textContent = '0'
 // parcourir la liste des produits, récupérer les détails via l'api, mettre à jour le DOM pour l'ajout d'article
 productsPanier.forEach(async (product) => {
@@ -11,7 +12,7 @@ productsPanier.forEach(async (product) => {
     .then((res) => res.json())
     .then(cart => {
       let totalQuantity = parseInt(document.querySelector("#totalQuantity").textContent);
-      totalQuantity = totalQuantity + product.quantity; //calcul de la quantité totale des articles commandés
+      totalQuantity += totalQuantity + product.quantity * cart.quantity; //calcul de la quantité totale des articles commandés
       let totalPrice = parseInt(document.querySelector("#totalPrice").textContent);
       totalPrice = totalPrice + cart.price * product.quantity;//calcul du prix totale des articles commandés
       document.querySelector("#cart__items").innerHTML += `<article class="cart__item" data-id="${cart._id}"  data-color="${product.color}">
@@ -40,7 +41,10 @@ productsPanier.forEach(async (product) => {
   document.querySelector("#totalQuantity").textContent =
     productsPanier ? productsPanier.length : 0;
 })
-
+}
+displayProducts ();
+// modification de la quantité
+function updatedProduct (){
 document.addEventListener('change', (event) => {
   if (!(event.target.classList.contains('itemQuantity'))) {
     return;
@@ -59,11 +63,12 @@ document.addEventListener('change', (event) => {
   console.log(productsPanier);
   
   localStorage.setItem("productsCart", JSON.stringify(productsPanier));//réinitialisation du localStorage
-  window.location.reload();
+  // window.location.reload();
 })
-
-
+}
+updatedProduct ();
 //suppression d'un produit
+function removeProduct (){
 document.addEventListener('click', (event) => {
   console.log('event :', event);
   if (!(event.target.classList.contains('deleteItem'))) {
@@ -83,9 +88,10 @@ document.addEventListener('click', (event) => {
   // |=> le 1 indique que l'on supprime 1 élément (un élément à chaque clic)
   console.log(productsPanier);
   localStorage.setItem("productsCart", JSON.stringify(productsPanier));//réinitialisation du localStorage
-  window.location.reload();
+  // window.location.reload();
 })
-
+}
+removeProduct ();
 // Gestion du formulaire et de l'envoie vers la page confirmation
 // Formulaire querySelector
 let first_name = document.querySelector("#firstName");
@@ -254,7 +260,7 @@ btn_order.addEventListener("click", (e) => {
       const POST_ORDER = await response.json();
       let orderId = POST_ORDER.orderId;
 
-      // Clear le localStorage (remove à la place de clear)
+      // remove le localStorage 
       
       localStorage.removeItem("productsCart");
       // Si l'orderId a bien été récupéré, on redirige l'utilisateur vers la page de Confirmation

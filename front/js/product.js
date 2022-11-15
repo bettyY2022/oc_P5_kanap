@@ -99,10 +99,12 @@ button.addEventListener("click", () => {
     } else {
       productsCart.push(newProduct)
     }
+    if(productsCart.length){
+      alert("le produit est bien ajouté au panier");
+    }
     // => enregistrer le nouveau element et l'additionne ds le localstorage
     localStorage.setItem("productsCart", JSON.stringify(productsCart));
     console.log('productsCart =>', productsCart);
-    window.location.href = "cart.html" // => renvoie sur la page panier du client (cart.html)
   }
 });
 
