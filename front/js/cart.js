@@ -1,18 +1,18 @@
 // => récupération des données de localstorage 
+
 let productsPanier = JSON.parse(localStorage.getItem("productsCart"));
 console.log(productsPanier);// => afficher les produits du panier
-function displayProducts (){
 // récupérer l'élement HTML qui correspond à la quantité 
 document.querySelector("#totalQuantity").textContent = '0'
 // récupérer l'élement HTML qui correspond au prix
 document.querySelector("#totalPrice").textContent = '0'
+let totalQuantity = parseInt(document.querySelector("#totalQuantity").textContent);
 // parcourir la liste des produits, récupérer les détails via l'api, mettre à jour le DOM pour l'ajout d'article
 productsPanier.forEach(async (product) => {
   await fetch("http://localhost:3000/api/products/" + product.id)// récupération des informations des produits depuis l'API
     .then((res) => res.json())
     .then(cart => {
-      let totalQuantity = parseInt(document.querySelector("#totalQuantity").textContent);
-      totalQuantity += totalQuantity + product.quantity * cart.quantity; //calcul de la quantité totale des articles commandés
+      totalQuantity += product.quantity; //calcul de la quantité totale des articles commandés
       let totalPrice = parseInt(document.querySelector("#totalPrice").textContent);
       totalPrice = totalPrice + cart.price * product.quantity;//calcul du prix totale des articles commandés
       document.querySelector("#cart__items").innerHTML += `<article class="cart__item" data-id="${cart._id}"  data-color="${product.color}">
@@ -39,61 +39,62 @@ productsPanier.forEach(async (product) => {
       document.querySelector("#totalPrice").textContent = totalPrice;
     })
   document.querySelector("#totalQuantity").textContent =
-    productsPanier ? productsPanier.length : 0;
+    productsPanier ? totalQuantity : 0; // (condition) ? do vrai: faux  
 })
-}
-displayProducts ();
+
+//fin boucle
 // modification de la quantité
-function updatedProduct (){
-document.addEventListener('change', (event) => {
-  if (!(event.target.classList.contains('itemQuantity'))) {
-    return;
-  }
-  const id = event.target.parentElement.parentElement.parentElement.parentElement.dataset.id;
-  const colorSelected = event.target.parentElement.parentElement.parentElement.parentElement.dataset.color;
-  console.log(id)
-  console.log(colorSelected);
+function updatedProduct() {
+  document.addEventListener('change', (event) => {
+    if (!(event.target.classList.contains('itemQuantity'))) {
+      return;
+    }
+    const id = event.target.parentElement.parentElement.parentElement.parentElement.dataset.id;
+    const colorSelected = event.target.parentElement.parentElement.parentElement.parentElement.dataset.color;
+    console.log(id)
+    console.log(colorSelected);
 
-  let productsPanier = JSON.parse(localStorage.getItem("productsCart"));// => on enregistrer dans LS
-  console.log(productsPanier);
+    let productsPanier = JSON.parse(localStorage.getItem("productsCart"));// => on enregistrer dans LS
+    console.log(productsPanier);
 
-  const productsFoundIndex = productsPanier.findIndex((product) => product.id === id && product.color === colorSelected);
-  console.log('productsFoundIndex:', productsFoundIndex);
-  productsPanier[productsFoundIndex].quantity = Number(event.target.value);
-  console.log(productsPanier);
-  
-  localStorage.setItem("productsCart", JSON.stringify(productsPanier));//réinitialisation du localStorage
-  // window.location.reload();
-})
+    const productsFoundIndex = productsPanier.findIndex((product) => product.id === id && product.color === colorSelected);
+    console.log('productsFoundIndex:', productsFoundIndex);
+    productsPanier[productsFoundIndex].quantity = Number(event.target.value);
+    console.log(productsPanier);
+
+    localStorage.setItem("productsCart", JSON.stringify(productsPanier));//réinitialisation du localStorage
+    // window.location.reload();
+  })
 }
-updatedProduct ();
+updatedProduct();
 //suppression d'un produit
-function removeProduct (){
-document.addEventListener('click', (event) => {
-  console.log('event :', event);
-  if (!(event.target.classList.contains('deleteItem'))) {
-    return;
-  }
-  const id = event.target.parentElement.parentElement.parentElement.parentElement.dataset.id;
-  const colorSelected = event.target.parentElement.parentElement.parentElement.parentElement.dataset.color;
-  console.log(id)
-  console.log(colorSelected);
+function removeProduct() {
+  document.addEventListener('click', (event) => {
+    console.log('event :', event);
+    if (!(event.target.classList.contains('deleteItem'))) {
+      return;
+    }
+    const id = event.target.parentElement.parentElement.parentElement.parentElement.dataset.id;
+    const colorSelected = event.target.parentElement.parentElement.parentElement.parentElement.dataset.color;
+    console.log(id)
+    console.log(colorSelected);
 
-  let productsPanier = JSON.parse(localStorage.getItem("productsCart"));
-  console.log(productsPanier);
+    let productsPanier = JSON.parse(localStorage.getItem("productsCart"));
+    console.log(productsPanier);
 
-  const productsFoundIndex = productsPanier.findIndex((product) => product.id === id && product.color === colorSelected);
-  console.log('productsFoundIndex:', productsFoundIndex);
-  productsPanier.splice(productsFoundIndex, 1);// =>méthode(splice) pour supprimer (ou remplacer) un élément (objet) ds le LS
-  // |=> le 1 indique que l'on supprime 1 élément (un élément à chaque clic)
-  console.log(productsPanier);
-  localStorage.setItem("productsCart", JSON.stringify(productsPanier));//réinitialisation du localStorage
-  // window.location.reload();
-})
+    const productsFoundIndex = productsPanier.findIndex((product) => product.id === id && product.color === colorSelected);
+    console.log('productsFoundIndex:', productsFoundIndex);
+    productsPanier.splice(productsFoundIndex, 1);// =>méthode(splice) pour supprimer (ou remplacer) un élément (objet) ds le LS
+    // |=> le 1 indique que l'on supprime 1 élément (un élément à chaque clic)
+    console.log(productsPanier);
+    localStorage.setItem("productsCart", JSON.stringify(productsPanier));//réinitialisation du localStorage
+    // window.location.reload();
+  })
 }
-removeProduct ();
+removeProduct();
 // Gestion du formulaire et de l'envoie vers la page confirmation
 // Formulaire querySelector
+
 let first_name = document.querySelector("#firstName");
 let last_name = document.querySelector("#lastName");
 let address = document.querySelector("#address");
@@ -158,7 +159,7 @@ btn_order.addEventListener("click", (e) => {
   };
 
   // Fonctions qui vérifie la validité des champs de saisies des inputs
-   // Control de la validité firstName
+  // Control de la validité firstName
   function firstNameControl() {
     let name_form = FORM_VALUE.firstName;
     if (REG_EX_LAST_FIRST_NAME(name_form)) {
@@ -243,7 +244,7 @@ btn_order.addEventListener("click", (e) => {
   for (let article_select of productsPanier) {
     products.push(article_select.id);
   }
-// une fois que les données saisies par un utilisateur sont validées, on les envoie à notre service web grâce au protocole HTTP
+  // une fois que les données saisies par un utilisateur sont validées, on les envoie à notre service web grâce au protocole HTTP
   // Envoie de l'objet order vers le serveur
   fetch("http://localhost:3000/api/products/order", {
     method: "POST",
@@ -261,7 +262,7 @@ btn_order.addEventListener("click", (e) => {
       let orderId = POST_ORDER.orderId;
 
       // remove le localStorage 
-      
+
       localStorage.removeItem("productsCart");
       // Si l'orderId a bien été récupéré, on redirige l'utilisateur vers la page de Confirmation
       window.location.assign("confirmation.html?id=" + orderId);
