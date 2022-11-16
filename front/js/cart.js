@@ -1,48 +1,61 @@
-// => récupération des données de localstorage 
+showCartProducts();
+calculateTotalPriceAndQuantity();
+function showCartProducts() {
+  // => récupération des données de localstorage 
+  let productsPanier = getCartProducts();
+  document.querySelector("#cart__items").innerHTML = '';
+  // parcourir la liste des produits, récupérer les détails via l'api, mettre à jour le DOM pour l'ajout d'article
+  productsPanier.forEach(async (cartProduct) => {
+    await fetch("http://localhost:3000/api/products/" + cartProduct.id)// récupération des informations des produits depuis l'API
+      .then((res) => res.json())
+      .then(product => {
+        document.querySelector("#cart__items").innerHTML += `<article class="cart__item" data-id="${product._id}"  data-color="${cartProduct.color}">
+          <div class="cart__item__img">
+          <img src="${product.imageUrl}" alt="${product.altTxt}">
+          </div>
+          <div class="cart__item__content">
+          <div class="cart__item__content__description"> 
+          <h2>${product.name}</h2>
+          <p>${cartProduct.color}</p>
+          <p>${product.price},00 €</p>
+          </div>
+          <div class="cart__item__content__settings">
+          <div class="cart__item__content__settings__quantity">
+          <p>Qté :</p>
+          <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${cartProduct.quantity}">
+          </div>
+          <div class="cart__item__content__settings__delete">
+          <p class="deleteItem">Supprimer</p>
+          </div>
+          </div>
+          </div>
+          </article>`;
+      })
+  })
+}
 
-let productsPanier = JSON.parse(localStorage.getItem("productsCart"));
-console.log(productsPanier);// => afficher les produits du panier
-// récupérer l'élement HTML qui correspond à la quantité 
-document.querySelector("#totalQuantity").textContent = '0'
-// récupérer l'élement HTML qui correspond au prix
-document.querySelector("#totalPrice").textContent = '0'
-let totalQuantity = parseInt(document.querySelector("#totalQuantity").textContent);
-// parcourir la liste des produits, récupérer les détails via l'api, mettre à jour le DOM pour l'ajout d'article
-productsPanier.forEach(async (product) => {
-  await fetch("http://localhost:3000/api/products/" + product.id)// récupération des informations des produits depuis l'API
-    .then((res) => res.json())
-    .then(cart => {
-      totalQuantity += product.quantity; //calcul de la quantité totale des articles commandés
-      let totalPrice = parseInt(document.querySelector("#totalPrice").textContent);
-      totalPrice = totalPrice + cart.price * product.quantity;//calcul du prix totale des articles commandés
-      document.querySelector("#cart__items").innerHTML += `<article class="cart__item" data-id="${cart._id}"  data-color="${product.color}">
-        <div class="cart__item__img">
-        <img src="${cart.imageUrl}" alt="${cart.altTxt}">
-        </div>
-        <div class="cart__item__content">
-        <div class="cart__item__content__description"> 
-        <h2>${cart.name}</h2>
-        <p>${product.color}</p>
-        <p>${cart.price},00 €</p>
-        </div>
-        <div class="cart__item__content__settings">
-        <div class="cart__item__content__settings__quantity">
-        <p>Qté :</p>
-        <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.quantity}">
-        </div>
-        <div class="cart__item__content__settings__delete">
-        <p class="deleteItem">Supprimer</p>
-        </div>
-        </div>
-        </div>
-        </article>`;
-      document.querySelector("#totalPrice").textContent = totalPrice;
-    })
-  document.querySelector("#totalQuantity").textContent =
-    productsPanier ? totalQuantity : 0; // (condition) ? do vrai: faux  
-})
+function calculateTotalPriceAndQuantity() {
+  let productsPanier = getCartProducts();
+  let totalQuantity = 0;
+  let totalPrice = 0;
+  if (!productsPanier || productsPanier.length == 0) {
+    document.querySelector("#totalPrice").textContent = totalPrice;
+    document.querySelector("#totalQuantity").textContent = totalQuantity;
+    return null;
+  }
+  productsPanier.forEach(async (cartProduct) => {
+    await fetch("http://localhost:3000/api/products/" + cartProduct.id)// récupération des informations des produits depuis l'API
+      .then((res) => res.json())
+      .then(product => {
+        totalQuantity += cartProduct.quantity; //calcul de la quantité totale des articles commandés
+        totalPrice = totalPrice + product.price * cartProduct.quantity;//calcul du prix totale des articles commandés
 
-//fin boucle
+      })
+    document.querySelector("#totalPrice").textContent = totalPrice;
+    document.querySelector("#totalQuantity").textContent = totalQuantity;
+  })
+}
+
 // modification de la quantité
 function updatedProduct() {
   document.addEventListener('change', (event) => {
@@ -61,9 +74,8 @@ function updatedProduct() {
     console.log('productsFoundIndex:', productsFoundIndex);
     productsPanier[productsFoundIndex].quantity = Number(event.target.value);
     console.log(productsPanier);
-
-    localStorage.setItem("productsCart", JSON.stringify(productsPanier));//réinitialisation du localStorage
-    // window.location.reload();
+    updateCartProducts(productsPanier);
+    calculateTotalPriceAndQuantity();
   })
 }
 updatedProduct();
@@ -87,11 +99,20 @@ function removeProduct() {
     productsPanier.splice(productsFoundIndex, 1);// =>méthode(splice) pour supprimer (ou remplacer) un élément (objet) ds le LS
     // |=> le 1 indique que l'on supprime 1 élément (un élément à chaque clic)
     console.log(productsPanier);
-    localStorage.setItem("productsCart", JSON.stringify(productsPanier));//réinitialisation du localStorage
-    // window.location.reload();
+    updateCartProducts(productsPanier);
+    showCartProducts();
+    calculateTotalPriceAndQuantity();
   })
 }
 removeProduct();
+
+function getCartProducts() {
+  return JSON.parse(localStorage.getItem("productsCart"));
+}
+function updateCartProducts(productList) {
+  localStorage.setItem("productsCart", JSON.stringify(productList));
+}
+
 // Gestion du formulaire et de l'envoie vers la page confirmation
 // Formulaire querySelector
 
@@ -171,7 +192,6 @@ btn_order.addEventListener("click", (e) => {
       return false;
     }
   }
-
   // Control de la validité lastName
   function lastNameControl() {
     let last_name_form = FORM_VALUE.lastName;
@@ -241,6 +261,7 @@ btn_order.addEventListener("click", (e) => {
 
   // Push les Id dans le tableau des produits
   let products = [];
+  let productsPanier = getCartProducts();
   for (let article_select of productsPanier) {
     products.push(article_select.id);
   }
