@@ -1,6 +1,6 @@
 showCartProducts();
 calculateTotalPriceAndQuantity();
-// fonction pour afficher un produit et ses détails
+// fonction pour afficher la liste des produits du panier
 function showCartProducts() {
   // => récupération des données de localstorage 
   let productsPanier = getCartProducts();
@@ -106,7 +106,7 @@ function removeProduct() {
   })
 }
 removeProduct();
-// fonction pour avoir où récupérer les produits dans la page panier 
+// fonction pour obtenir les produits dans la page panier 
 function getCartProducts() {
   return JSON.parse(localStorage.getItem("productsCart"));
 }
@@ -167,21 +167,25 @@ btn_order.addEventListener("click", (e) => {
   // REGEX
   const FORM_VALUE = new Form();
 
-  // Const regEx pour le formulaire
+  // Const regEx pour le champ du nom et prénom 
   const REG_EX_LAST_FIRST_NAME = (value) => {
     return /^[A-Za-z]{2,38}$/.test(value);
   };
+  // Const regEx pour le champ ville 
   const REG_EX_CITY = (value) => {
     return /^[A-Za-zéèàïêç\-\s]{1,50}\s+[0-9]{5}$/.test(value);
   };
+  // Const regEx pour le champ adresse 
   const REG_EX_ADDRESS = (value) => {
     return /^[0-9]{1,5}\s+[A-Za-zéèàïêç\-\s]{2,50}$/.test(value);
   };
+  // Const regEx pour le champ mail 
   const REG_EX_E_MAIL = (value) => {
     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value);
   };
 
   // Fonctions qui vérifie la validité des champs de saisies des inputs
+
   // fonction pour vérifier la validité firstName
   function firstNameControl() {
     let name_form = FORM_VALUE.firstName;
@@ -207,7 +211,7 @@ btn_order.addEventListener("click", (e) => {
     }
   }
 
- // fonction pour vérifier la validité du champ l'addresse
+  // fonction pour vérifier la validité du champ l'addresse
   function addressControl() {
     let address_form = FORM_VALUE.address;
     if (REG_EX_ADDRESS(address_form)) {
@@ -220,7 +224,7 @@ btn_order.addEventListener("click", (e) => {
     }
   }
 
- // fonction pour vérifier la validité du champ ville
+  // fonction pour vérifier la validité du champ ville
   function cityControl() {
     let city_form = FORM_VALUE.city;
     if (REG_EX_CITY(city_form)) {
@@ -232,7 +236,7 @@ btn_order.addEventListener("click", (e) => {
     }
   }
 
- // fonction pour vérifier la validité du champ email
+  // fonction pour vérifier la validité du champ email
   function emailControl() {
     let email_form = FORM_VALUE.email;
     if (REG_EX_E_MAIL(email_form)) {
@@ -284,8 +288,7 @@ btn_order.addEventListener("click", (e) => {
       const POST_ORDER = await response.json();
       let orderId = POST_ORDER.orderId;
 
-      // remove le localStorage 
-
+      // remove le localStorage
       localStorage.removeItem("productsCart");
       // Si l'orderId a bien été récupéré, on redirige l'utilisateur vers la page de Confirmation
       window.location.assign("confirmation.html?id=" + orderId);

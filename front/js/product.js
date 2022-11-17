@@ -20,6 +20,7 @@ function retrieveProducts() {
     setColors(colors);
   }
   //=> des fonctions pour récupèrer les informations et les afficher par la suite
+  // fonction pour récupérer l'image
   function setImage(imageUrl, altTxt) {
     let image = document.querySelector(".item__img");
     image.innerHTML = `<img src=${imageUrl}  alt=${altTxt} />`;
@@ -28,6 +29,7 @@ function retrieveProducts() {
    * ajouter le titre du produit
    * @param {string} name - le nom du produit
    */
+  // fonction pour récupérer le nom
   function setTitle(name) {
     let nameProduct = document.querySelector("#title");
     nameProduct.innerHTML = `<h1 id="title">${name}</h1>`;
@@ -36,6 +38,7 @@ function retrieveProducts() {
    * ajouter le titre du produit
    * @param {number} price - prix du produit
    */
+  // fonction pour récupérer le prix
   function setPrice(price) {
     let priceArticle = document.querySelector("#price");
     priceArticle.innerHTML = `<span id="price">${price}</span>`;
@@ -44,6 +47,7 @@ function retrieveProducts() {
    * ajouter le titre du produit
    * @param {string} description - description du produit
    */
+  // fonction pour récupérer la description
   function setDescription(description) {
     let descriptionArticle = document.querySelector("#description");
     descriptionArticle.innerHTML = `<p id="description">${description}</p>`;
@@ -52,6 +56,7 @@ function retrieveProducts() {
    * ajouter le titre du produit
    * @param {string} color - color du produit
    */
+  // fonction pour récupérer les couleurs 
   function setColors(colors) {
     let select = document.querySelector("#colors");
     colors.forEach((color) => {
