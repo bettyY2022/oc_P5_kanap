@@ -4,7 +4,7 @@
 let kanap = []; // => variable de type tableau de produits canapés
 
 // ********************************************************************************************************* //
-// recup et insérer les produits dans la page d'accueil via l'api
+// fonction pour récupérer et insérer les produits dans la page d'accueil via l'api
 function manipulateAPI() {
     fetch("http://localhost:3000/api/products") // => fonction fetch pour récupérer les données d'API
         .then((res) => res.json()) //=> réponse pour récupération du fichier JSON 

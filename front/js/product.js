@@ -1,5 +1,5 @@
 // ********************************************************************************************************* //
-// récupérer l'id du produit à afficher
+// fonction pour récupérer l'id du produit à afficher
 function retrieveProducts() {
   let productId = new URL(window.location.href).searchParams.get("id"); // => récupération d'id avec les paramétres de l'url
 
@@ -9,8 +9,7 @@ function retrieveProducts() {
     .then((product) => showProduct(product));
 
   // ********************************************************************************************************* //
-  // insérer un produit et ses détails dans la page produit 
-
+  // fonction pour insérer un produit et ses détails dans la page produit 
   function showProduct(produit) { // => récupèration des clés en variables des fonctions
     const { imageUrl, altTxt, name, price, description, colors } = produit;
     itemPrice = price

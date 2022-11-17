@@ -1,5 +1,6 @@
 showCartProducts();
 calculateTotalPriceAndQuantity();
+// fonction pour afficher un produit et ses détails
 function showCartProducts() {
   // => récupération des données de localstorage 
   let productsPanier = getCartProducts();
@@ -33,7 +34,7 @@ function showCartProducts() {
       })
   })
 }
-
+// fonction pour calculer le total du prix et du quantité 
 function calculateTotalPriceAndQuantity() {
   let productsPanier = getCartProducts();
   let totalQuantity = 0;
@@ -56,7 +57,7 @@ function calculateTotalPriceAndQuantity() {
   })
 }
 
-// modification de la quantité
+// fonction pour modifier la quantité souhaitée par le client
 function updatedProduct() {
   document.addEventListener('change', (event) => {
     if (!(event.target.classList.contains('itemQuantity'))) {
@@ -79,7 +80,7 @@ function updatedProduct() {
   })
 }
 updatedProduct();
-//suppression d'un produit
+// fonction pour supprimer l'artcile souhaité par le client
 function removeProduct() {
   document.addEventListener('click', (event) => {
     console.log('event :', event);
@@ -105,10 +106,11 @@ function removeProduct() {
   })
 }
 removeProduct();
-
+// fonction pour avoir où récupérer les produits dans la page panier 
 function getCartProducts() {
   return JSON.parse(localStorage.getItem("productsCart"));
 }
+// fonction pour modifier la quantité 
 function updateCartProducts(productList) {
   localStorage.setItem("productsCart", JSON.stringify(productList));
 }
@@ -180,7 +182,7 @@ btn_order.addEventListener("click", (e) => {
   };
 
   // Fonctions qui vérifie la validité des champs de saisies des inputs
-  // Control de la validité firstName
+  // fonction pour vérifier la validité firstName
   function firstNameControl() {
     let name_form = FORM_VALUE.firstName;
     if (REG_EX_LAST_FIRST_NAME(name_form)) {
@@ -192,7 +194,7 @@ btn_order.addEventListener("click", (e) => {
       return false;
     }
   }
-  // Control de la validité lastName
+  // fonction pour vérifier la validité du champ lastName
   function lastNameControl() {
     let last_name_form = FORM_VALUE.lastName;
     if (REG_EX_LAST_FIRST_NAME(last_name_form)) {
@@ -205,7 +207,7 @@ btn_order.addEventListener("click", (e) => {
     }
   }
 
-  // Control de la validité address
+ // fonction pour vérifier la validité du champ l'addresse
   function addressControl() {
     let address_form = FORM_VALUE.address;
     if (REG_EX_ADDRESS(address_form)) {
@@ -218,7 +220,7 @@ btn_order.addEventListener("click", (e) => {
     }
   }
 
-  // Control de la validité city
+ // fonction pour vérifier la validité du champ ville
   function cityControl() {
     let city_form = FORM_VALUE.city;
     if (REG_EX_CITY(city_form)) {
@@ -230,7 +232,7 @@ btn_order.addEventListener("click", (e) => {
     }
   }
 
-  // Control de la validité email
+ // fonction pour vérifier la validité du champ email
   function emailControl() {
     let email_form = FORM_VALUE.email;
     if (REG_EX_E_MAIL(email_form)) {

@@ -1,4 +1,4 @@
-// récupération de l'id pour l'ajouter dans le textContent
+// fonction pour récupérer l'id et ajout dans le textContent
 function confirmationId() {
     let orderId = new URLSearchParams(window.location.search).get("id");
 
